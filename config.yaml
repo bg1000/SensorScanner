@@ -1,23 +1,21 @@
+general:
+    scan_interval: 60
 mqtt:
     host: mqtt.thegrays.duckdns.org
     port: 1883
     user: "" 
-    password: "" 
-    discovery: true #defaults to false, uncomment to enable home-assistant discovery
+    password: ""
+    keep_alive: 60 
+    discovery: false #defaults to false, uncomment to enable home-assistant discovery
     discovery_prefix: homeassistant #change to match with setting of home-assistant
-    availability_topic: home-assistant/cover/availabilty
+    availability_topic: home-assistant/garage/availability
     payload_available: online
     payload_not_available: offline
 
-doors:
+DHT22:
     -
-        id:  'garage_door'
-        name: #garage_door
-        relay: 21 
-        state: 12
-        open: 7
-        state_mode: normally_closed #defaults to normally open, uncomment to switch
-#        invert_relay: true #defaults to false, uncomment to turn relay pin on by default
-        state_topic: "home-assistant/cover"
-        command_topic: "home-assistant/cover/set"
+        gpio:  'garage_door'
+        temperature_topic: garage/temperature
+        humidity_topic: garage/humidity 
+
 

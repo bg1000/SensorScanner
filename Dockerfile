@@ -5,10 +5,10 @@ FROM arm32v7/python:3.8.1-buster
 RUN apt-get install git -y
 
 # Download GarageQTPi app
-RUN git clone https://github.com/bg1000/GarageQTPi
+RUN git clone https://github.com/bg1000/SensorScanner.git
 
 # Intall required python modules
-RUN pip3 install --no-cache-dir -r ./GarageQTPi/requirements.txt
+RUN pip3 install --no-cache-dir -r ./SensorScanner/requirements.txt
 
 # Run GarageQTPi
-CMD ["python3", "./GarageQTPi/main.py"]
+CMD ["python3", "./SensorScnner/main.py"]

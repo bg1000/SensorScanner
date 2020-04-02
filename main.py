@@ -1,16 +1,19 @@
 #!/usr/bin/python3
 
 import time
+import os
 import RPi.GPIO as io
 import Adafruit_DHT
 import paho.mqtt.client as mqtt
+import yaml
 import time
-import utils
 import sys
 import datetime
 import voluptuous as vol
+import json
+import random
 from voluptuous import Any
-from lib.util import GracefulKiller
+from lib.utils import GracefulKiller
 
 DEFAULT_KEEP_ALIVE = 60
 DEFAULT_DISCOVERY = False
@@ -25,6 +28,11 @@ def on_message(client, userdata, message):
     print(str(datetime.datetime.now()) + "message qos=",message.qos)
     print(str(datetime.datetime.now()) + "message retain flag=",message.retain)
 
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code: %s" % mqtt.connack_string(rc))
+    # notify subscribed clients that we are available
+    client.publish(availability_topic, payload_available, retain=True)
+
 if __name__ == '__main__':
 
     killer = GracefulKiller()
@@ -33,7 +41,8 @@ if __name__ == '__main__':
     {
     "general": vol.Schema(
         {
-          vol.Required("scan_interval"):str
+          vol.Required("scan_interval"):int,
+          vol.Required("log_readings"): bool
         }
 
     ),  
@@ -43,7 +52,7 @@ if __name__ == '__main__':
             vol.Required("port"): int,
             vol.Required("user"): str,
             vol.Required("password"): str,
-            vol.Optional("keep_alive"), default = DEFAULT_KEEP_ALIVE): Any(int, None) 
+            vol.Optional("keep_alive", default = DEFAULT_KEEP_ALIVE): Any(int, None), 
             vol.Optional("discovery", default = DEFAULT_DISCOVERY): Any(bool, None),
             vol.Optional("discovery_prefix", default = DEFAULT_DISCOVERY_PREFIX): Any(str, None),
             vol.Optional("availability_topic", default = DEFAULT_AVAILABILITY_TOPIC): Any(str, None),
@@ -76,7 +85,8 @@ if __name__ == '__main__':
     port = int(CONFIG['mqtt']['port'])
     if CONFIG['mqtt']['keep_alive'] is None:
       keep_alive = DEFAULT_KEEP_ALIVE
-    else keep_alive = CONFIG['mqtt']['keep_alive']
+    else:
+         keep_alive = CONFIG['mqtt']['keep_alive']
     if CONFIG['mqtt']['discovery'] is None:
         discovery = DEFAULT_DISCOVERY
     else:
@@ -131,6 +141,11 @@ if __name__ == '__main__':
 
     client.connect(host, port, keep_alive)
     client.loop_start()
+    # 
+    #ToDo add discovery
+    #
+    
+    
     #
     # Set up GPIO
     #

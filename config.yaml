@@ -1,5 +1,6 @@
 general:
     scan_interval: 60
+    log_readings: false
 mqtt:
     host: mqtt.thegrays.duckdns.org
     port: 1883
@@ -14,7 +15,7 @@ mqtt:
 
 DHT22:
     -
-        gpio:  'garage_door'
+        gpio: 3
         temperature_topic: garage/temperature
         humidity_topic: garage/humidity 
 

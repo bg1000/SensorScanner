@@ -1,25 +1,32 @@
 logging:
-    log_level: INFO
-    show_timestamp: true
+  log_level: INFO
+  show_timestamp: true
 general:
-    scan_interval: 60
-    log_readings: false
+  scan_interval: 60
+  log_readings: false
 mqtt:
-    host: mqtt.thegrays.duckdns.org
-    port: 1883
-    user: "" 
-    password: ""
-    keep_alive: 60 
-    discovery: false #defaults to false, uncomment to enable home-assistant discovery
-    discovery_prefix: homeassistant #change to match with setting of home-assistant
-    availability_topic: home-assistant/garage/availability
-    payload_available: online
-    payload_not_available: offline
-
-DHT22:
-    -
-        gpio: 3
-        temperature_topic: garage/temperature
-        humidity_topic: garage/humidity 
+  host: mqtt.thegrays.duckdns.org
+  port: 1883
+  user: "" 
+  password: ""
+  keep_alive: 60 
+  discovery: false #defaults to false, uncomment to enable home-assistant discovery
+  discovery_prefix: homeassistant #change to match with setting of home-assistant
+  availability_topic: home-assistant/garage/availability
+  payload_available: online
+  payload_not_available: offline
+DHT:
+  scan_interval: 60 
+  sensors:
+    - type: DHT22
+      scan_count: 1
+      gpio: 3
+      temperature_topic: garage/temperature
+      humidity_topic: garage/humidity
+    - type: DHT11
+      scan_count: 1
+      gpio: 4
+      temperature_topic: garage/temperature
+      humidity_topic: garage/humidity 
 
 

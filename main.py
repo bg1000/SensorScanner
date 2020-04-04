@@ -16,6 +16,7 @@ import logging
 import lib.sensors
 from voluptuous import Any
 from lib.utils import GracefulKiller
+from threading import Lock
 
 DEFAULT_KEEP_ALIVE = 60
 DEFAULT_DISCOVERY = False
@@ -23,6 +24,8 @@ DEFAULT_DISCOVERY_PREFIX = "homeassistant"
 DEFAULT_AVAILABILITY_TOPIC = "home-assistant/cover/availabilty"
 DEFAULT_PAYLOAD_AVAILABLE = "online"
 DEFAULT_PAYLOAD_NOT_AVAILABLE ="offline"
+
+mqtt_lock = threading.Lock()
 
 def on_message(client, userdata, message):
     logging.info("message received = " + str(message.payload.decode("utf-8")))
@@ -99,7 +102,7 @@ if __name__ == '__main__':
     else:
         logging.basicConfig(level=CONFIG["logging"]["log_level"])
     
-    logging.info("Config suceesfully validated against schema")
+    logging.info("Config sucessfully validated against schema")
     logging.info(json.dumps(
         CONFIG, indent = 4))
     ### SETUP MQTT ###
@@ -164,7 +167,7 @@ if __name__ == '__main__':
 
 
     client.connect(host, port, keep_alive)
-    client.loop_start()
+    
     # 
     #ToDo add discovery
     #
@@ -175,22 +178,28 @@ if __name__ == '__main__':
     #
     io.setwarnings(False)
     io.setmode(io.BCM)
-    sensor = Adafruit_DHT.DHT22
-    pin = 3
+    #
+    # Check for various sensors here and set up the classes
+    #
+    #
+
+    # sensor = Adafruit_DHT.DHT22
+    # pin = 3
     #
     # Main Loop
     #
-    while True:
-      humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
-      humidity = round(humidity,1)
-      temperature = round((temperature * 9.0 / 5.0)+ 32.0,1)
-      if humidity is not None and temperature is not None:
-        logging.info(str('Temp={0:0.1f}*F  Humidity={1:0.1f}%'.format(temperature, humidity)))
-        client.publish("garage/temp1", temperature)
-        client.publish("garage/humidity1", humidity)
-      else:
-        logging.warning(str(datetime.datetime.now()) + 'Failed to get reading. Try again!') 
-      time.sleep(60)
+    #while True:
+    #  humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+    #  humidity = round(humidity,1)
+    #  temperature = round((temperature * 9.0 / 5.0)+ 32.0,1)
+    #  if humidity is not None and temperature is not None:
+    #    logging.info(str('Temp={0:0.1f}*F  Humidity={1:0.1f}%'.format(temperature, humidity)))
+    #    client.publish("garage/temp1", temperature)
+    #   client.publish("garage/humidity1", humidity)
+    #  else:
+    #   logging.warning(str(datetime.datetime.now()) + 'Failed to get reading. Try again!') 
+    # time.sleep(60)
+    client.loop_forever()
       if killer.kill_now:
         break
     logging.info ("End of the program. I was killed gracefully")

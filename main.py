@@ -3,7 +3,6 @@
 import time
 import os
 import RPi.GPIO as io
-import Adafruit_DHT
 import paho.mqtt.client as mqtt
 import yaml
 import time
@@ -13,10 +12,10 @@ import voluptuous as vol
 import json
 import random
 import logging
+import queue
 import lib.sensors
 from voluptuous import Any
-from lib.utils import GracefulKiller
-from threading import Lock
+
 
 DEFAULT_KEEP_ALIVE = 60
 DEFAULT_DISCOVERY = False
@@ -25,7 +24,6 @@ DEFAULT_AVAILABILITY_TOPIC = "home-assistant/cover/availabilty"
 DEFAULT_PAYLOAD_AVAILABLE = "online"
 DEFAULT_PAYLOAD_NOT_AVAILABLE ="offline"
 
-mqtt_lock = threading.Lock()
 
 def on_message(client, userdata, message):
     logging.info("message received = " + str(message.payload.decode("utf-8")))
@@ -37,17 +35,19 @@ def on_connect(client, userdata, flags, rc):
     logging.info("Connected with result code: %s" % mqtt.connack_string(rc))
     # notify subscribed clients that we are available
     client.publish(availability_topic, payload_available, retain=True)
+    # mqtt_lock.release()
 
 if __name__ == '__main__':
 
-    killer = GracefulKiller()
+
 
     CONFIG_SCHEMA = vol.Schema(
     {
     "general": vol.Schema(
         {
-          vol.Required("scan_interval"):int,
-          vol.Required("log_readings"): bool
+          vol.Required("log_readings"): bool,
+          vol.Required("loop_time"): int,
+          vol.Required("max_queue_size"): int
         }
 
     ),
@@ -105,6 +105,12 @@ if __name__ == '__main__':
     logging.info("Config sucessfully validated against schema")
     logging.info(json.dumps(
         CONFIG, indent = 4))
+    #
+    # setup queue where sensors make mqtt publish requests
+    #
+    reading_queue = queue.Queue(maxsize = int(CONFIG["general"]["max_queue_size"]))
+
+
     ### SETUP MQTT ###
     user = CONFIG['mqtt']['user']
     password = CONFIG['mqtt']['password']
@@ -149,7 +155,7 @@ if __name__ == '__main__':
     0, 999999))), clean_session=True, userdata=None, protocol=mqtt.MQTTv311)
     
     client.on_message=on_message
-    logging.info("Connecting to broker")
+    
     client.on_connect = on_connect
 
     client.username_pw_set(user, password=password)
@@ -166,8 +172,9 @@ if __name__ == '__main__':
         "'")
 
 
+    logging.info("Connecting to broker")
     client.connect(host, port, keep_alive)
-    
+    client.loop_start()
     # 
     #ToDo add discovery
     #
@@ -179,28 +186,20 @@ if __name__ == '__main__':
     io.setwarnings(False)
     io.setmode(io.BCM)
     #
-    # Check for various sensors here and set up the classes
+    # Initialize sensor types
     #
-    #
+    if "DHT" in CONFIG:
+        dhts = lib.sensors.DHT_type(CONFIG["DHT"], reading_queue)
 
-    # sensor = Adafruit_DHT.DHT22
-    # pin = 3
-    #
+
     # Main Loop
     #
-    #while True:
-    #  humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
-    #  humidity = round(humidity,1)
-    #  temperature = round((temperature * 9.0 / 5.0)+ 32.0,1)
-    #  if humidity is not None and temperature is not None:
-    #    logging.info(str('Temp={0:0.1f}*F  Humidity={1:0.1f}%'.format(temperature, humidity)))
-    #    client.publish("garage/temp1", temperature)
-    #   client.publish("garage/humidity1", humidity)
-    #  else:
-    #   logging.warning(str(datetime.datetime.now()) + 'Failed to get reading. Try again!') 
-    # time.sleep(60)
-    client.loop_forever()
-      if killer.kill_now:
-        break
-    logging.info ("End of the program. I was killed gracefully")
+    while True:
+        while not reading_queue.empty():
+            message = reading_queue.get()
+            client.publish(message["topic"], message["payload"])
+            logging.debug("publishing " + str(message["payload"]) + " to " + str(message["topic"]) )
+        time.sleep(CONFIG["general"]["loop_time"])
+
+
 

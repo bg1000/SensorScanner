@@ -1,9 +1,10 @@
 logging:
-  log_level: INFO
+  log_level: DEBUG
   show_timestamp: true
 general:
-  scan_interval: 60
   log_readings: false
+  loop_time: 5
+  max_queue_size: 100
 mqtt:
   host: mqtt.thegrays.duckdns.org
   port: 1883
@@ -16,17 +17,13 @@ mqtt:
   payload_available: online
   payload_not_available: offline
 DHT:
-  scan_interval: 60 
+  scan_interval: 15 
   sensors:
     - type: DHT22
       scan_count: 1
       gpio: 3
       temperature_topic: garage/temperature
       humidity_topic: garage/humidity
-    - type: DHT11
-      scan_count: 1
-      gpio: 4
-      temperature_topic: garage/temperature
-      humidity_topic: garage/humidity 
+
 
 

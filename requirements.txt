@@ -3,3 +3,5 @@ PyYAML==5.2
 voluptuous==0.11.7
 RPi.GPIO==0.7.0
 Adafruit_DHT==1.4.0
+# adafruit-blinka
+# adafruit-circuitpython-dht

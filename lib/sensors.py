@@ -1,5 +1,5 @@
 from threading import Timer
-from threading import Lock
+from copy import deepcopy
 import logging
 import Adafruit_DHT
 
@@ -66,22 +66,21 @@ class DHT(sensor):
 
     def read(self):
         humidity, temperature = Adafruit_DHT.read_retry(self.type, self.gpio)
-        message1 = {}
-        message2 = {}
+        message = {}
         if humidity is not None and temperature is not None:
             humidity = round(humidity,1)
             temperature = round((temperature * 9.0 / 5.0)+ 32.0,1)
             logging.debug(str('Temp={0:0.1f}*F  Humidity={1:0.1f}%'.format(temperature, humidity)))
             if not self.queue.full():
-                message1["topic"] = self.temperature_topic
-                message1["payload"] = temperature
-                self.queue.put(message1)
+                message["topic"] = self.temperature_topic
+                message["payload"] = temperature
+                self.queue.put(deepcopy(message))
             else:
                 logging.warning("The queue is full.  Sensor reading discarded.")
             if not self.queue.full():
-                message2["topic"] = self.humidity_topic
-                message2["payload"] = humidity
-                self.queue.put(message2)
+                message["topic"] = self.humidity_topic
+                message["payload"] = humidity
+                self.queue.put(deepcopy(message))
             else:
                 logging.warning("The queue is full.  Sensor reading discarded.")
         else:

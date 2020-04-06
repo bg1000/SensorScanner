@@ -2,6 +2,7 @@ from threading import Timer
 from copy import deepcopy
 import logging
 import Adafruit_DHT
+import queue
 
 # from:
 # https://stackoverflow.com/questions/12435211/python-threading-timer-repeat-function-every-n-seconds
@@ -37,7 +38,7 @@ class sensor(object):
         self.scan_count = self.config["scan_count"]
         self.counter = 0
     
-    def read():
+    def read(self):
         pass
 
 class DHT_type(sensor_type):
@@ -71,17 +72,14 @@ class DHT(sensor):
             humidity = round(humidity,1)
             temperature = round((temperature * 9.0 / 5.0)+ 32.0,1)
             logging.debug(str('Temp={0:0.1f}*F  Humidity={1:0.1f}%'.format(temperature, humidity)))
-            if not self.queue.full():
-                message["topic"] = self.temperature_topic
-                message["payload"] = temperature
-                self.queue.put(deepcopy(message))
-            else:
-                logging.warning("The queue is full.  Sensor reading discarded.")
-            if not self.queue.full():
+            message["topic"] = self.temperature_topic
+            message["payload"] = temperature
+            try:
+                self.queue.put(deepcopy(message))    
                 message["topic"] = self.humidity_topic
                 message["payload"] = humidity
                 self.queue.put(deepcopy(message))
-            else:
-                logging.warning("The queue is full.  Sensor reading discarded.")
+            except Queue.Full:
+                logging.warning("The queue is full.  Sensor reading discarded.")    
         else:
             logging.warning('Failed to get reading from DHT sensor')

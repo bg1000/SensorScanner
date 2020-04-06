@@ -7,3 +7,14 @@ class GracefulKiller:
 
   def exit_gracefully(self,signum, frame):
     self.kill_now = True
+
+import importlib.util
+import sys
+
+class module_importer:
+
+    def import(self, module, path):
+        spec = importlib.util.spec_from_file_location(module, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)

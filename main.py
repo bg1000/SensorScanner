@@ -14,6 +14,7 @@ import random
 import logging
 import queue
 from voluptuous import Any
+from utils import module_importer
 
 
 DEFAULT_KEEP_ALIVE = 60
@@ -187,6 +188,12 @@ if __name__ == '__main__':
     #
     # Initialize sensor types
     #
+    # Todo: 
+    # 1) Change config.yaml to have a sensors section & add module and class
+    # 2) Change Voluptous Schema to have sensors but otherwise be permissive
+    # 3) use module_importer here to import the correct module
+    # 4) initialize sensor type with the config
+    
     if "DHT" in CONFIG:
         dhts = lib.sensors.DHT_type(CONFIG["DHT"], reading_queue)
 

@@ -14,7 +14,7 @@ import random
 import logging
 import queue
 from voluptuous import Any
-from utils import module_importer
+from lib.utils import module_importer
 
 
 DEFAULT_KEEP_ALIVE = 60
@@ -73,20 +73,7 @@ if __name__ == '__main__':
 
         }
     ),
-    vol.Optional("DHT"): 
-    vol.Schema(
-        {
-        vol.Required("scan_interval"): int,
-        vol.Required("sensors"): [
-                
-            vol.Schema({
-                       vol.Required("type"): Any("DHT11","DHT22"),
-                       vol.Required("scan_count"): int,
-                       vol.Required("gpio"): int,
-                       vol.Required("temperature_topic"): str, 
-                       vol.Required("humidity_topic"): str
-                       })]
-        })
+    vol.Required("sensors"): vol.Schema({},extra = vol.ALLOW_EXTRA)
     })
 
 
@@ -185,17 +172,24 @@ if __name__ == '__main__':
     #
     io.setwarnings(False)
     io.setmode(io.BCM)
+
+    sensor_types = []
+    importer = module_importer()
     #
-    # Initialize sensor types
+    # For each sensor type in the config file we are going to
+    # import it's module then instantiate an instance
+    # and add it to the list of sensor types
+    # the sensor type will add the indivudal sensors as part of it constructor
     #
-    # Todo: 
-    # 1) Change config.yaml to have a sensors section & add module and class
-    # 2) Change Voluptous Schema to have sensors but otherwise be permissive
-    # 3) use module_importer here to import the correct module
-    # 4) initialize sensor type with the config
+    for key, value in CONFIG["sensors"].items():
+        mod = "module.name"
+        path = os.path.abspath(os.path.dirname(__file__)) + '/sensors/' + value["module"] + '.py'
+        # imports module and returns a reference we can use to instantiate an instance
+        module = importer.import_module(mod, path)
+        class_ = getattr(module,value["class"])
+        sensor_types.append(class_(value,reading_queue)) #<== need to pass in the CONFIG and the reading_queue here
+
     
-    if "DHT" in CONFIG:
-        dhts = lib.sensors.DHT_type(CONFIG["DHT"], reading_queue)
 
 
     # Main Loop

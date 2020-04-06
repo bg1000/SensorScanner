@@ -16,14 +16,17 @@ mqtt:
   availability_topic: home-assistant/garage/availability
   payload_available: online
   payload_not_available: offline
-DHT:
-  scan_interval: 15 
-  sensors:
-    - type: DHT22
-      scan_count: 1
-      gpio: 3
-      temperature_topic: garage/temperature
-      humidity_topic: garage/humidity
+sensors:  
+  DHT:
+    module: dht
+    class: DHT_type      
+    scan_interval: 15 
+    sensors:
+      - type: DHT22
+        scan_count: 1
+        gpio: 3
+        temperature_topic: garage/temperature
+        humidity_topic: garage/humidity
 
 
 

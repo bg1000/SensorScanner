@@ -13,8 +13,9 @@ import sys
 
 class module_importer:
 
-    def import(self, module, path):
+    def import_module(self, module, path):
         spec = importlib.util.spec_from_file_location(module, path)
         module = importlib.util.module_from_spec(spec)
-        sys.modules[module_name] = module
+        sys.modules[module] = module
         spec.loader.exec_module(module)
+        return module

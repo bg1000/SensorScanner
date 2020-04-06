@@ -1,7 +1,9 @@
 from threading import Timer
 from copy import deepcopy
 import logging
-from sensor import RepeatTimer
+from sensors.sensor import RepeatTimer
+from sensors.sensor import sensor
+from sensors.sensor import sensor_type
 import Adafruit_DHT
 #
 # sensor implmentation for the DHT11 and DHT22 temperature & humidity sensors

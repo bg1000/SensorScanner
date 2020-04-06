@@ -11,4 +11,4 @@ RUN git clone https://github.com/bg1000/SensorScanner.git
 RUN pip3 install --no-cache-dir -r ./SensorScanner/requirements.txt
 
 # Run GarageQTPi
-CMD ["python3", "./SensorScnner/main.py"]
+CMD ["python3", "./SensorScanner/main.py"]

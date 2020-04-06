@@ -13,7 +13,6 @@ import json
 import random
 import logging
 import queue
-import lib.sensors
 from voluptuous import Any
 
 

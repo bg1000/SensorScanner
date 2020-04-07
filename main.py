@@ -187,10 +187,25 @@ if __name__ == '__main__':
         # imports module and returns a reference we can use to instantiate an instance
         module = importer.import_module(mod, path)
         class_ = getattr(module,value["class"])
-        sensor_types.append(class_(value,reading_queue)) #<== need to pass in the CONFIG and the reading_queue here
+        sensor_types.append(class_(value,reading_queue)) 
 
     
+        # if discovery is True:
+        #     config_topic = discovery_prefix + "/sensor/garage/config"
+        #     discovery_payload1 = {"device_class": "temperature", "name": "garage_temperature", "state_topic": "homeassistant/sensor/garage/state", "unit_of_measurement": "°F", "value_template": "{{ value_json.temperature}}" }
+        #     discovery_payload2 = {"device_class": "humidity", "name": "garage_humidity", "state_topic": "homeassistant/sensor/garage/state", "unit_of_measurement": "%", "value_template": "{{ value_json.humidity}}" }
+        #     sample_payload = "{ "temperature": 23.20, "humidity": 43.70 }"
 
+
+        #     client.publish(
+        #         config_topic,
+        #         discovery_payload1,
+        #         retain=True)
+
+        #     print(
+        #         "Sent audodiscovery config: " + discovery_payload1)
+
+        #     print("to topic: " + config_topic)
 
     # Main Loop
     #

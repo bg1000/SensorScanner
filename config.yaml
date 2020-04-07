@@ -13,7 +13,7 @@ mqtt:
   keep_alive: 60 
   discovery: false #defaults to false, uncomment to enable home-assistant discovery
   discovery_prefix: homeassistant #change to match with setting of home-assistant
-  availability_topic: home-assistant/garage/availability
+  availability_topic: home-assistant/garage/sensors/availability
   payload_available: online
   payload_not_available: offline
 sensors:  
@@ -25,8 +25,22 @@ sensors:
       - type: DHT22
         scan_count: 1
         gpio: 3
-        temperature_topic: garage/temperature
-        humidity_topic: garage/humidity
+        discovery: true
+        discovery_topic: /sensor/garage/config
+        state_topic:
+        discovery_payloads:
+          - payload:
+            device_class: temperature
+            name: garage_temperature
+            state_topic:
+            unit_of_measurement:
+            value_template:
+          - payload:
+            device_class: humidity
+            name: garage_humidity
+            state_topic:
+            unit_of_measurement:
+            value_template:
 
 
 

@@ -2,6 +2,7 @@ from threading import Timer
 from copy import deepcopy
 import logging
 import Adafruit_DHT
+import json
 
 # from:
 # https://stackoverflow.com/questions/12435211/python-threading-timer-repeat-function-every-n-seconds
@@ -23,9 +24,11 @@ class RepeatTimer(Timer):
 #
 class sensor_type(object):
   
-    def __init__(self, config, queue):
+    def __init__(self, config, queue, global_discovery, discovery_prefix):
         self.config = config
         self.queue = queue
+        self.global_discovery = global_discovery
+        self.discovery_prefix = discovery_prefix
         self.sensors = []
         self.timer = RepeatTimer(self.config["scan_interval"], self.tick)
     def tick(self):
@@ -34,6 +37,16 @@ class sensor_type(object):
             if sensor.counter == sensor.scan_count:
                 sensor.counter = 0
                 sensor.read()
+    def send_discovery():
+        if global_discovery and sensor["discovery"]:
+                message["topic"] = str(self.discovery_prefix) + "/" + str(config["sensors"]["discovery_topic"])
+                for item, value in sensor["discovery_payloads"]:
+                    message["value"] = json.dumps(value["discovery_payload"])
+                    try:
+                        self.queue.put(deepcopy(message))
+                    except Queue.Full:
+                        logging.critical ("Queue is full. Unable to send discovery info")      
+
 
 
 

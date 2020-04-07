@@ -27,20 +27,20 @@ sensors:
         gpio: 3
         discovery: true
         discovery_topic: /sensor/garage/config
-        state_topic:
+        state_topic: /sensor/garage/state
         discovery_payloads:
           - payload:
             device_class: temperature
             name: garage_temperature
-            state_topic:
-            unit_of_measurement:
-            value_template:
+            state_topic: homeassistant/sensor/garage/state
+            unit_of_measurement: '°F'
+            value_template: {{ value_json.temperature}}
           - payload:
             device_class: humidity
             name: garage_humidity
-            state_topic:
-            unit_of_measurement:
-            value_template:
+            state_topic: homeassistant/sensor/garage/state
+            unit_of_measurement: '%'
+            value_template: {{ value_json.humidity}}
 
-
+              
 

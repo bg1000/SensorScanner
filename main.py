@@ -187,7 +187,7 @@ if __name__ == '__main__':
         # imports module and returns a reference we can use to instantiate an instance
         module = importer.import_module(mod, path)
         class_ = getattr(module,value["class"])
-        sensor_types.append(class_(value,reading_queue)) 
+        sensor_types.append(class_(value,reading_queue, CONFIG["mqtt"]["discovery"],CONFIG["mqtt"]["discovery_prefix"])) 
 
     
         # if discovery is True:

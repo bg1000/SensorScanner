@@ -41,9 +41,18 @@ class sensor_type(object):
         message = {}
         for sensor in self.sensors:
             if self.global_discovery and sensor.discovery:
-                message["topic"] = sensor.discovery_topic
-                for payload in sensor.discovery_payloads:
-                    message["payload"] = json.dumps(payload)
+                
+                for item in sensor.discovery_info:
+                    #
+                    # make a copy so we can remove topic and send
+                    # everything else as the payload
+                    # without altering original config in case
+                    # we need it later.
+                    #
+                    discovery_info = deepcopy(item)
+                    message["topic"] = self.discovery_prefix + discovery_info["discovery_topic"]
+                    del discovery_info["discovery_topic"] 
+                    message["payload"] = json.dumps(discovery_info)
                     try:
                         self.queue.put(deepcopy(message))
                     except Queue.Full:
@@ -59,9 +68,8 @@ class sensor(object):
         self.scan_count = self.config["scan_count"]
         self.counter = 0
         self.discovery = config["discovery"]
-        self.discovery_topic = discovery_prefix + config["discovery_topic"]
         self.state_topic = discovery_prefix + config["state_topic"]
-        self.discovery_payloads = config["discovery_payloads"]
+        self.discovery_info = config["discovery_info"]
     
     def read():
         pass

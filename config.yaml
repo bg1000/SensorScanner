@@ -1,5 +1,5 @@
 logging:
-  log_level: DEBUG
+  log_level: INFO
   show_timestamp: true
 general:
   log_readings: false
@@ -26,16 +26,17 @@ sensors:
         scan_count: 1
         gpio: 3
         discovery: true
-        discovery_topic: /sensor/garage/config
         state_topic: /sensor/garage/state
-        discovery_payloads:
+        discovery_info:
           - device_class: temperature
             name: garage_temperature
+            discovery_topic: /sensor/garage_temp/config
             state_topic: homeassistant/sensor/garage/state
             unit_of_measurement: '°F'
             value_template: '{{ value_json.temperature}}'
           - device_class: humidity
             name: garage_humidity
+            discovery_topic: /sensor/garage_humid/config
             state_topic: homeassistant/sensor/garage/state
             unit_of_measurement: '%'
             value_template: '{{ value_json.humidity}}'

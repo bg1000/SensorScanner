@@ -28,20 +28,22 @@ class sensor_type(object):
         self.config = config
         self.queue = queue
         self.global_discovery = global_discovery
-        self.discovery_prefix = discovery_prefix
         self.sensors = []
         self.timer = RepeatTimer(self.config["scan_interval"], self.tick)
+        self.discovery_prefix = discovery_prefix
     def tick(self):
         for sensor in self.sensors:
             sensor.counter += 1
             if sensor.counter == sensor.scan_count:
                 sensor.counter = 0
                 sensor.read()
-    def send_discovery():
-        if global_discovery and sensor["discovery"]:
-                message["topic"] = str(self.discovery_prefix) + "/" + str(config["sensors"]["discovery_topic"])
-                for item, value in sensor["discovery_payloads"]:
-                    message["value"] = json.dumps(value["discovery_payload"])
+    def send_discovery(self):
+        message = {}
+        for sensor in self.sensors:
+            if self.global_discovery and sensor.discovery:
+                message["topic"] = self.discovery_prefix + sensor.discovery_topic
+                for payload in sensor.discovery_payloads:
+                    message["payload"] = json.dumps(payload)
                     try:
                         self.queue.put(deepcopy(message))
                     except Queue.Full:
@@ -56,6 +58,9 @@ class sensor(object):
         self.queue = queue
         self.scan_count = self.config["scan_count"]
         self.counter = 0
+        self.discovery = config["discovery"]
+        self.discovery_topic = config["discovery_topic"]
+        self.discovery_payloads = config["discovery_payloads"]
     
     def read():
         pass

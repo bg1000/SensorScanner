@@ -20,7 +20,7 @@ sensors:
   DHT:
     module: dht
     class: DHT_type      
-    scan_interval: 15 
+    scan_interval: 60 
     sensors:
       - type: DHT22
         scan_count: 1

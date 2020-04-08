@@ -41,7 +41,7 @@ class sensor_type(object):
         message = {}
         for sensor in self.sensors:
             if self.global_discovery and sensor.discovery:
-                message["topic"] = self.discovery_prefix + sensor.discovery_topic
+                message["topic"] = sensor.discovery_topic
                 for payload in sensor.discovery_payloads:
                     message["payload"] = json.dumps(payload)
                     try:
@@ -53,13 +53,14 @@ class sensor_type(object):
 
 
 class sensor(object):
-    def __init__(self, config, queue):
+    def __init__(self, config, queue, discovery_prefix):
         self.config = config
         self.queue = queue
         self.scan_count = self.config["scan_count"]
         self.counter = 0
         self.discovery = config["discovery"]
-        self.discovery_topic = config["discovery_topic"]
+        self.discovery_topic = discovery_prefix + config["discovery_topic"]
+        self.state_topic = discovery_prefix + config["state_topic"]
         self.discovery_payloads = config["discovery_payloads"]
     
     def read():

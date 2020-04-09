@@ -82,18 +82,21 @@ if __name__ == '__main__':
 # when running in docker.  If not there look in the directory the script is 
 # running from.
 #
-try:
-    with open('/config/config.yaml', 'r') as ymlfile:
-        file_CONFIG = yaml.load(ymlfile, Loader=yaml.FullLoader)
-        logging.debug("using /config/config.yaml")
-except FileNotFoundError:
-    try:
-        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.yaml'), 'r') as ymlfile:
-            file_CONFIG = yaml.load(ymlfile, Loader=yaml.FullLoader)
-            logging.debug("Using config.yaml from script directory")
-    except FileNotFoundError:
-        logging.critical ("No config.yaml found. SensorScanner exiting.")
-        os._exit(1)
+# try:
+#     with open('/config/config.yaml', 'r') as ymlfile:
+#         file_CONFIG = yaml.load(ymlfile, Loader=yaml.FullLoader)
+#         logging.debug("using /config/config.yaml")
+# except FileNotFoundError:
+#     try:
+#         with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.yaml'), 'r') as ymlfile:
+#             file_CONFIG = yaml.load(ymlfile, Loader=yaml.FullLoader)
+#             logging.debug("Using config.yaml from script directory")
+#     except FileNotFoundError:
+#         logging.critical ("No config.yaml found. SensorScanner exiting.")
+#         os._exit(1)
+
+    with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.yaml'), 'r') as ymlfile:
+        file_CONFIG = yaml.load(ymlfile, Loader=yaml.FullLoader)  
 
     CONFIG = CONFIG_SCHEMA(file_CONFIG)
     #

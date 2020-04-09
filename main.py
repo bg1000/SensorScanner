@@ -90,7 +90,7 @@ except FileNotFoundError:
     try:
         with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.yaml'), 'r') as ymlfile:
             file_CONFIG = yaml.load(ymlfile, Loader=yaml.FullLoader)
-            loging.debug("Using config.yaml from script directory")
+            logging.debug("Using config.yaml from script directory")
     except FileNotFoundError:
         logging.critical ("No config.yaml found. SensorScanner exiting.")
         os._exit(1)

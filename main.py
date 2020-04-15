@@ -1,20 +1,22 @@
-#!/usr/bin/python3
-
-import time
-import os
-import RPi.GPIO as io
-import paho.mqtt.client as mqtt
-import yaml
-import time
-import sys
+# Standard library imports
 import datetime
-import voluptuous as vol
 import json
-import random
 import logging
+import os
 import queue
+import random
+import sys
+import time
+
+# Third party imports
+import paho.mqtt.client as mqtt
+import RPi.GPIO as io
 from voluptuous import Any
-from lib.utils import module_importer
+import voluptuous as vol
+import yaml
+
+# Local application imports
+from lib.utils import module_importer # pylint: disable=import-error
 
 
 DEFAULT_KEEP_ALIVE = 60
@@ -38,8 +40,6 @@ def on_connect(client, userdata, flags, rc):
     # mqtt_lock.release()
 
 if __name__ == '__main__':
-
-
 
     CONFIG_SCHEMA = vol.Schema(
     {
@@ -205,8 +205,12 @@ if __name__ == '__main__':
     while True:
         while not reading_queue.empty():
             message = reading_queue.get()
-            client.publish(message["topic"], message["payload"])
-            logging.debug("publishing " + str(message["payload"]) + " to " + str(message["topic"]) )
+            client.publish(message["topic"], message["payload"], 
+                          qos=message["qos"], retain = message["retain"])
+            
+            logging.debug("publishing " + str(message["payload"]) 
+                         + " to " + str(message["topic"]) )
+        
         time.sleep(CONFIG["general"]["loop_time"])
 
 

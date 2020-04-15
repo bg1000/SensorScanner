@@ -2,9 +2,9 @@ from threading import Timer
 from copy import deepcopy
 import logging
 import queue
-from sensors.sensor import RepeatTimer
-from sensors.sensor import sensor
-from sensors.sensor import sensor_type
+from sensors.sensor import RepeatTimer # pylint: disable=import-error
+from sensors.sensor import sensor # pylint: disable=import-error
+from sensors.sensor import sensor_type # pylint: disable=import-error
 import json
 import Adafruit_DHT
 #

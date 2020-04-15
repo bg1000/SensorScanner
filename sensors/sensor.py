@@ -1,9 +1,11 @@
-from threading import Timer
+# Standard Library imports
 from copy import deepcopy
-import logging
-import Adafruit_DHT
 import json
-from queue import Queue.full
+import logging
+import queue
+from threading import Timer
+
+
 # from:
 # https://stackoverflow.com/questions/12435211/python-threading-timer-repeat-function-every-n-seconds
 # answer # 16
@@ -44,20 +46,23 @@ class sensor_type(object):
                 
                 for item in sensor.discovery_info:
                     #
-                    # make a copy so we can remove topic and send
+                    # make a copy so we can remove topic, qos, retain and send
                     # everything else as the payload
                     # without altering original config in case
                     # we need it later.
                     #
                     discovery_info = deepcopy(item)
                     message["topic"] = self.discovery_prefix + discovery_info["discovery_topic"]
-                    del discovery_info["discovery_topic"] 
+                    message["qos"] = discovery_info["qos"]
+                    message["retain"] = discovery_info["retain"]
+                    del discovery_info["discovery_topic"]
+                    del discovery_info["qos"]
+                    del discovery_info["retain"] 
                     message["payload"] = json.dumps(discovery_info)
                     try:
                         self.queue.put(deepcopy(message))
-                    except Queue.Full:
+                    except queue.Full:
                         logging.critical ("Queue is full. Unable to send discovery info")      
-
 
 
 
@@ -70,7 +75,8 @@ class sensor(object):
         self.discovery = config["discovery"]
         self.state_topic = discovery_prefix + config["state_topic"]
         self.discovery_info = config["discovery_info"]
-    
-    def read():
+        self.qos = config["qos"]
+        self.retain = config["retain"] 
+    def read(self):
         pass
 

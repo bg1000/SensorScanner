@@ -3,7 +3,7 @@ from copy import deepcopy
 import logging
 import Adafruit_DHT
 import json
-
+from queue import Queue.full
 # from:
 # https://stackoverflow.com/questions/12435211/python-threading-timer-repeat-function-every-n-seconds
 # answer # 16

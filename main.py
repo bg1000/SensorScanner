@@ -177,12 +177,7 @@ if __name__ == '__main__':
 
     logging.info("Connecting to broker")
     client.connect(host, port, keep_alive)
-    client.loop_start()
-    # 
-    #ToDo add discovery
-    #
-    
-    
+    client.loop_start()   
     #
     # Set up GPIO
     #
@@ -195,7 +190,7 @@ if __name__ == '__main__':
     # For each sensor type in the config file we are going to
     # import it's module then instantiate an instance
     # and add it to the list of sensor types
-    # the sensor type will add the indivudal sensors as part of it constructor
+    # the sensor type will add the individual sensors as part of it constructor
     #
     for key, value in CONFIG["sensors"].items():
         mod = "module.name"
@@ -203,25 +198,7 @@ if __name__ == '__main__':
         # imports module and returns a reference we can use to instantiate an instance
         module = importer.import_module(mod, path)
         class_ = getattr(module,value["class"])
-        sensor_types.append(class_(value,reading_queue, CONFIG["mqtt"]["discovery"],CONFIG["mqtt"]["discovery_prefix"])) 
-
-    
-        # if discovery is True:
-        #     config_topic = discovery_prefix + "/sensor/garage/config"
-        #     discovery_payload1 = {"device_class": "temperature", "name": "garage_temperature", "state_topic": "homeassistant/sensor/garage/state", "unit_of_measurement": "°F", "value_template": "{{ value_json.temperature}}" }
-        #     discovery_payload2 = {"device_class": "humidity", "name": "garage_humidity", "state_topic": "homeassistant/sensor/garage/state", "unit_of_measurement": "%", "value_template": "{{ value_json.humidity}}" }
-        #     sample_payload = "{ "temperature": 23.20, "humidity": 43.70 }"
-
-
-        #     client.publish(
-        #         config_topic,
-        #         discovery_payload1,
-        #         retain=True)
-
-        #     print(
-        #         "Sent audodiscovery config: " + discovery_payload1)
-
-        #     print("to topic: " + config_topic)
+        sensor_types.append(class_(value,reading_queue, CONFIG["mqtt"]["discovery"],CONFIG["mqtt"]["discovery_prefix"]))    
 
     # Main Loop
     #

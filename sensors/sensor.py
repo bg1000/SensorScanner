@@ -54,10 +54,9 @@ class sensor_type(object):
                     discovery_info = deepcopy(item)
                     message["topic"] = self.discovery_prefix + discovery_info["discovery_topic"]
                     message["qos"] = discovery_info["qos"]
-                    message["retain"] = discovery_info["retain"]
+                    message["retain"] = True # always retain discovery info
                     del discovery_info["discovery_topic"]
                     del discovery_info["qos"]
-                    del discovery_info["retain"] 
                     message["payload"] = json.dumps(discovery_info)
                     try:
                         self.queue.put(deepcopy(message))

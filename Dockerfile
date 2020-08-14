@@ -6,11 +6,11 @@ FROM arm32v7/python:3.8.1-buster
 
 # RUN apk add --no-cache git
 
-# Download GarageQTPi app
-RUN git clone https://github.com/bg1000/SensorScanner.git
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+# ENV PYTHONUNBUFFERED 1 <- was in example but don't think I need
+COPY . .
+CMD python3 main.py
 
-# Intall required python modules
-RUN pip3 install --no-cache-dir -r ./SensorScanner/requirements.txt
-
-# Run GarageQTPi
-CMD ["python3", "./SensorScanner/main.py"]
